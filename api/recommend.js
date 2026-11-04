@@ -24,34 +24,47 @@ export default async function handler(req, res) {
   const MODEL = "gemini-3.8-flash"; // use a current free-tier model from AI Studio
 
   try {
-    const r = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-goog-api-key": key },
-        body: JSON.stringify({
-          systemInstruction: {
-            parts: [
-              {
-                text:
-                  "You are a music recommendation engine. You receive a person's saved albums with a star rating (0 means unrated) and a status (wishlist, listening, listened). " +
-                  "Infer their taste from patterns such as genres, eras, moods, and artists. Weight 4-5 star albums most, and steer away from the style of 1-2 star albums. " +
-                  "Recommend exactly 6 real, released albums that are NOT in their list. At most 2 may be by artists already in the list. " +
-                  'Reply only with JSON: {"albums":[{"title":"","artist":"","reason":""}]}. ' +
-                  "Each reason is under 15 words and mentions the pattern it matches. Never include song lyrics.",
-              },
-            ],
-          },
-          contents: [{ role: "user", parts: [{ text: JSON.stringify(taste) }] }],
-          generationConfig: { responseMimeType: "application/json" },
-        }),
-      }
-    );
+    const request = {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-goog-api-key": key },
+      body: JSON.stringify({
+        systemInstruction: {
+          parts: [
+            {
+              text:
+                "You are a music recommendation engine. You receive a person's saved albums with a star rating (0 means unrated) and a status (wishlist, listening, listened). " +
+                "Infer their taste from patterns such as genres, eras, moods, and artists. Weight 4-5 star albums most, and steer away from the style of 1-2 star albums. " +
+                "Recommend exactly 6 real, released albums that are NOT in their list. At most 2 may be by artists already in the list. " +
+                'Reply only with JSON: {"albums":[{"title":"","artist":"","reason":""}]}. ' +
+                "Each reason is under 15 words and mentions the pattern it matches. Never include song lyrics.",
+            },
+          ],
+        },
+        contents: [{ role: "user", parts: [{ text: JSON.stringify(taste) }] }],
+        generationConfig: { responseMimeType: "application/json" },
+      }),
+    };
+
+    let r;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      r = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
+        request
+      );
+      if (r.status !== 503 || attempt === 2) break;
+
+      await r.text();
+      await new Promise((resolve) => setTimeout(resolve, 500 * 2 ** attempt));
+    }
 
     if (!r.ok) {
       const detail = await r.text();
       console.error("Gemini error:", r.status, detail);
-      return res.status(502).json({ error: `Gemini returned ${r.status}. Check the terminal for details.` });
+      const error =
+        r.status === 503
+          ? "Gemini is temporarily unavailable. Please try again shortly."
+          : `Gemini returned ${r.status}. Check the server logs for details.`;
+      return res.status(502).json({ error });
     }
 
     const data = await r.json();

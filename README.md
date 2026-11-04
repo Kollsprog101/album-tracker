@@ -2,8 +2,8 @@
 
 A React web app for searching music albums, previewing tracks, and keeping a personal listening log with statuses, ratings, and notes. It offers full-album playback through Deezer's embeddable player and LLM-powered recommendations based on the user's saved albums and ratings.
 
-**Live link:** _add your Vercel URL here_  
-**Screenshot:** _add a screenshot here_
+**Live link: https://album-tracker-bomsc0kht-kollsprog101.vercel.app/
+**Screenshot: ![ebendensya](image.png)
 
 ## Features
 - Search albums and artists (iTunes Search API)
