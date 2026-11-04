@@ -3,7 +3,10 @@
 A React web app for searching music albums, previewing tracks, and keeping a personal listening log with statuses, ratings, and notes. It offers full-album playback through Deezer's embeddable player and LLM-powered recommendations based on the user's saved albums and ratings.
 
 **Live link: https://album-tracker-bomsc0kht-kollsprog101.vercel.app/
-**Screenshot: ![ebendensya](image.png)
+**Screenshot: ![Dicover](image.png)
+              ![My Collection](image-1.png)
+              ![Recomendation](image-2.png)
+
 
 ## Features
 - Search albums and artists (iTunes Search API)
@@ -18,7 +21,7 @@ React, Vite, Context API, iTunes API, Deezer, Gemini, Vercel serverless function
 
 ## Run locally
 ```bash
-git clone https://github.com/YOUR-USERNAME/album-tracker.git
+git clone https://github.com/Kollsprog101/album-tracker.git
 cd album-tracker
 npm install
 # create .env.local with: GEMINI_API_KEY=your-key
