@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Save at least 3 albums first so there's a pattern to learn from." });
   }
 
-  const MODEL = "gemini-3.5-flash-lite"; // use a current free-tier model from AI Studio
+  const MODEL = "gemini-3.8-flash"; // use a current free-tier model from AI Studio
 
   try {
     const r = await fetch(
